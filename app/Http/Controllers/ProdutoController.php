@@ -17,9 +17,9 @@ class ProdutoController extends Controller
             $v = str_replace(',', '.', $request->valor);
             $valor = is_numeric($v)? floatval($v) : ucfirst($v);
             if(is_string($valor)){
-                $produtos = Produto::all()->whereIn('produto', $valor);
+                $produtos = Produto::where('produto', 'like', $valor.'%')->get();
             } elseif(is_float($valor)){
-                $produtos = Produto::all()->where('preco', '=', $valor);
+                $produtos = Produto::where('preco', '=', $valor)->get();
             }
         }
 
@@ -41,16 +41,16 @@ class ProdutoController extends Controller
             $produto->save();
             return redirect()->route('prods');
         } catch(Exception $e){
+
             return redirect()->back()->withErrors(['Algum campo não foi informado ou esse produto já existe.']);
         }
-
-
     }
 
     /** PRODUTOS ESPECÍFICO */
     public function formEditaProduto(Produto $produto){
         return view('formeditproduto', ['produto' => $produto]);
     }
+    /** */
     public function atualizado(Request $request, Produto $produto){
         $produto->produto = ucfirst($request->produto);
         $produto->preco = $request->preco;
@@ -59,6 +59,7 @@ class ProdutoController extends Controller
 
         return redirect()->route('prods');
     }
+    /** */
     public function deletar(Produto $produto){
         $produto->delete();
 
